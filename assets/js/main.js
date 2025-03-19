@@ -1,83 +1,69 @@
 /*
-	Spectral by HTML5 UP
-	html5up.net | @ajlkn
-	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+ * Change Navbar color while scrolling
 */
 
-(function($) {
+$(window).scroll(function(){
+	handleTopNavAnimation();
+});
 
-	var	$window = $(window),
-		$body = $('body'),
-		$wrapper = $('#page-wrapper'),
-		$banner = $('#banner'),
-		$header = $('#header');
+$(window).load(function(){
+	handleTopNavAnimation();
+});
 
-	// Breakpoints.
-		breakpoints({
-			xlarge:   [ '1281px',  '1680px' ],
-			large:    [ '981px',   '1280px' ],
-			medium:   [ '737px',   '980px'  ],
-			small:    [ '481px',   '736px'  ],
-			xsmall:   [ null,      '480px'  ]
-		});
+function handleTopNavAnimation() {
+	var top=$(window).scrollTop();
 
-	// Play initial animations on page load.
-		$window.on('load', function() {
-			window.setTimeout(function() {
-				$body.removeClass('is-preload');
-			}, 100);
-		});
+	if(top>10){
+		$('#site-nav').addClass('navbar-solid'); 
+	}
+	else{
+		$('#site-nav').removeClass('navbar-solid'); 
+	}
+}
 
-	// Mobile?
-		if (browser.mobile)
-			$body.addClass('is-mobile');
-		else {
+/*
+ * Registration Form
+*/
 
-			breakpoints.on('>medium', function() {
-				$body.removeClass('is-mobile');
-			});
+$('#registration-form').submit(function(e){
+    e.preventDefault();
+    
+    var postForm = { //Fetch form data
+            'fname'     : $('#registration-form #fname').val(),
+            'lname'     : $('#registration-form #lname').val(),
+            'email'     : $('#registration-form #email').val(),
+            'cell'      : $('#registration-form #cell').val(),
+            'address'   : $('#registration-form #address').val(),
+            'zip'       : $('#registration-form #zip').val(),
+            'city'      : $('#registration-form #city').val(),
+            'program'   : $('#registration-form #program').val()
+    };
 
-			breakpoints.on('<=medium', function() {
-				$body.addClass('is-mobile');
-			});
+    $.ajax({
+            type      : 'POST',
+            url       : './assets/php/contact.php',
+            data      : postForm,
+            dataType  : 'json',
+            success   : function(data) {
+                            if (data.success) {
+                                $('#registration-msg .alert').html("Registration Successful");
+                                $('#registration-msg .alert').removeClass("alert-danger");
+                                $('#registration-msg .alert').addClass("alert-success");
+                                $('#registration-msg').show();
+                            }
+                            else
+                            {
+                                $('#registration-msg .alert').html("Registration Failed");
+                                $('#registration-msg .alert').removeClass("alert-success");
+                                $('#registration-msg .alert').addClass("alert-danger");
+                                $('#registration-msg').show();
+                            }
+                        }
+        });
+});
 
-		}
+/*
+ * SmoothScroll
+*/
 
-	// Scrolly.
-		$('.scrolly')
-			.scrolly({
-				speed: 1500,
-				offset: $header.outerHeight()
-			});
-
-	// Menu.
-		$('#menu')
-			.append('<a href="#menu" class="close"></a>')
-			.appendTo($body)
-			.panel({
-				delay: 500,
-				hideOnClick: true,
-				hideOnSwipe: true,
-				resetScroll: true,
-				resetForms: true,
-				side: 'right',
-				target: $body,
-				visibleClass: 'is-menu-visible'
-			});
-
-	// Header.
-		if ($banner.length > 0
-		&&	$header.hasClass('alt')) {
-
-			$window.on('resize', function() { $window.trigger('scroll'); });
-
-			$banner.scrollex({
-				bottom:		$header.outerHeight() + 1,
-				terminate:	function() { $header.removeClass('alt'); },
-				enter:		function() { $header.addClass('alt'); },
-				leave:		function() { $header.removeClass('alt'); }
-			});
-
-		}
-
-})(jQuery);
+smoothScroll.init();
